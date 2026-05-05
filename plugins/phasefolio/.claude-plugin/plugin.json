@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "phasefolio",
   "version": "0.1.4",
   "description": "Risk-adjusted NPV (rNPV) and biotech diligence engine via MCP — clinical-asset valuation, PoS benchmark lookup, comparable-trial landscape, signed-export verification.",

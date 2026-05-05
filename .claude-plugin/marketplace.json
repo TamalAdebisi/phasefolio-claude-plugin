@@ -1,18 +1,16 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "phasefolio",
   "owner": {
     "name": "Tamal Adebisi",
     "email": "tamaladebisi@gmail.com"
   },
-  "description": "PhaseFolio plugins for Claude Code — biotech diligence, rNPV computation, and signed-export verification.",
   "metadata": {
-    "pluginRoot": "./plugins"
+    "description": "PhaseFolio plugins for Claude Code — biotech diligence, rNPV computation, and signed-export verification."
   },
   "plugins": [
     {
       "name": "phasefolio",
-      "source": "phasefolio",
+      "source": "./plugins/phasefolio",
       "description": "Risk-adjusted NPV (rNPV) and biotech diligence engine — exposes PhaseFolio's MCP tools for clinical-asset valuation, PoS lookup, comparable-trial discovery, and signed-export verification.",
       "version": "0.1.4",
       "homepage": "https://phasefolio.com",
