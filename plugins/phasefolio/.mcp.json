@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "phasefolio": {
+      "command": "npx",
+      "args": ["-y", "@phasefolio/mcp@0.1.4"]
+    }
+  }
+}

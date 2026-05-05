@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "phasefolio",
+  "version": "0.1.4",
+  "description": "Risk-adjusted NPV (rNPV) and biotech diligence engine via MCP — clinical-asset valuation, PoS benchmark lookup, comparable-trial landscape, signed-export verification.",
+  "author": {
+    "name": "Tamal Adebisi",
+    "email": "tamaladebisi@gmail.com",
+    "url": "https://phasefolio.com"
+  },
+  "homepage": "https://phasefolio.com",
+  "repository": "https://github.com/TamalAdebisi/phasefolio-claude-plugin",
+  "license": "MIT",
+  "keywords": ["biotech", "rnpv", "diligence", "valuation", "mcp", "clinical-trials"]
+}
