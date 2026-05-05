@@ -1,64 +1,67 @@
-# PhaseFolio Claude Code Plugin
+# PhaseFolio for Claude Code
 
-Adds **[PhaseFolio](https://phasefolio.com)** — risk-adjusted NPV and biotech diligence — to Claude Code as a plugin.
+> Risk-adjusted NPV (rNPV) and biotech diligence — directly inside Claude Code.
 
-This is a thin wrapper around the published [`@phasefolio/mcp`](https://www.npmjs.com/package/@phasefolio/mcp) server, distributed as a Claude Code marketplace so users can install it with one slash command.
+[PhaseFolio](https://phasefolio.com) is a financial-modeling engine for biotech assets. This plugin connects Claude to the same engine that powers the PhaseFolio web app — so you can value pipelines, look up clinical-trial probabilities of success, scan competitive landscapes, and verify signed reports without leaving your terminal.
 
 ## Install
+
+In any Claude Code session:
 
 ```text
 /plugin marketplace add TamalAdebisi/phasefolio-claude-plugin
 /plugin install phasefolio@phasefolio
 ```
 
-The first install will fetch `@phasefolio/mcp` from npm via `npx`, so users do not need to install anything globally.
+The MCP server is fetched from npm on first use. Nothing else to install.
 
-## What it adds
+## What you can ask Claude
 
-- **MCP tools** for rNPV computation, PoS benchmark lookup, landscape comparables, and signed-export verification.
-- An **onboarding skill** (`phasefolio-onboarding`) that explains the tool surface on first use.
+Once installed, prompts like these will Just Work:
 
-The full engine assumptions are documented at the [methodology hub](https://phasefolio.com/methodology).
+- *"Compute the rNPV for an NSCLC EGFR-mutant 2L+ asset entering Phase II with $30M Phase II spend over 24 months."*
+- *"What's the probability of success for rheumatoid arthritis, antibody, no biomarker?"*
+- *"Pull comparable trials and competing programs for a Phase III oncology asset."*
+- *"Verify this signed PhaseFolio export."* (paste signature)
+- *"What does PhaseFolio do?"* (the bundled onboarding skill answers)
 
-## Layout
+Claude discovers the available tools and their input schemas automatically — you don't need to memorize names.
 
-```
-.
-├── .claude-plugin/
-│   └── marketplace.json          # marketplace catalog
-└── plugins/
-    └── phasefolio/
-        ├── .claude-plugin/
-        │   └── plugin.json       # plugin manifest
-        ├── .mcp.json             # spawns @phasefolio/mcp via npx
-        └── skills/
-            └── phasefolio-onboarding/
-                └── SKILL.md
-```
+## What's inside
 
-## Updating
+The plugin exposes PhaseFolio's MCP tool surface for four use cases:
 
-The plugin pins `@phasefolio/mcp@0.1.4`. To take a newer engine:
+| Use case | What it does |
+| :--- | :--- |
+| **Valuation** | Computes risk-adjusted NPV across clinical stages with custom costs, durations, peak sales, and discount rates. |
+| **Benchmarks** | Looks up published probabilities of success by indication × modality × biomarker, with stage and IO multipliers. |
+| **Landscape** | Surfaces comparable trials and competing programs from ClinicalTrials.gov + FDA Drugs@FDA, narrowed per sub-indication. |
+| **Trust** | Verifies signed PhaseFolio export signatures and surfaces the embedded engine, methodology, and benchmark versions. |
 
-1. Bump the version in [`plugins/phasefolio/.mcp.json`](plugins/phasefolio/.mcp.json) (the `args` array).
-2. Bump `version` in [`plugins/phasefolio/.claude-plugin/plugin.json`](plugins/phasefolio/.claude-plugin/plugin.json) and the matching entry in [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json).
-3. Push to `main`. Users see the new version on `/plugin marketplace update`.
+## Why "trust" is a tool
 
-The MCP server itself is released independently from `@phasefolio/mcp` on npm and from the Official MCP Registry as `com.phasefolio/phasefolio` — this plugin only re-exposes it inside the Claude Code marketplace surface.
+Every PhaseFolio export — PDF, Excel, dossier — embeds the exact `engine_version`, `methodology_version`, and `benchmark_dataset_versions` that produced it. That makes any number a counterparty receives reproducible: they can verify the signature publicly and inspect the methodology that was current when the export was issued.
 
-## Local testing
+Public surfaces (no account needed):
 
-```bash
-git clone https://github.com/TamalAdebisi/phasefolio-claude-plugin
-cd phasefolio-claude-plugin
-# inside Claude Code:
-/plugin marketplace add ./
-/plugin install phasefolio@phasefolio
-```
+- **Methodology hub** — <https://phasefolio.com/methodology>
+- **Public benchmarks** — <https://phasefolio.com/benchmarks>
+- **Verify a signed export** — <https://phasefolio.com/verify>
 
-## Submit to the official Anthropic marketplace
+## Important notes
 
-Once this community marketplace is stable, submit at <https://claude.ai/settings/plugins/submit> for inclusion in the Anthropic-curated catalog.
+- **Not financial advice.** PhaseFolio outputs are decision-support inputs. Investment decisions are yours.
+- **No PHI.** The engine consumes anonymized clinical-asset metadata only. Do not paste patient-level data into prompts.
+- **Free academic access.** A Research Tier exists for academic and nonprofit use — see the [contact page](https://phasefolio.com/contact).
+
+## Source
+
+| Component | Where |
+| :--- | :--- |
+| This Claude Code plugin | [TamalAdebisi/phasefolio-claude-plugin](https://github.com/TamalAdebisi/phasefolio-claude-plugin) |
+| MCP server (npm) | [`@phasefolio/mcp`](https://www.npmjs.com/package/@phasefolio/mcp) |
+| MCP server (Official Registry) | `com.phasefolio/phasefolio` |
+| Web app | <https://phasefolio.com> |
 
 ## License
 
