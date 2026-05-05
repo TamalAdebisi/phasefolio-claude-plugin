@@ -1,8 +1,8 @@
 # PhaseFolio for Claude Code
 
-> Risk-adjusted NPV (rNPV) and biotech diligence — directly inside Claude Code.
+> Bring your PhaseFolio biotech-diligence work directly into Claude Code.
 
-[PhaseFolio](https://phasefolio.com) is a financial-modeling engine for biotech assets. This plugin connects Claude to the same engine that powers the PhaseFolio web app — so you can value pipelines, look up clinical-trial probabilities of success, scan competitive landscapes, and verify signed reports without leaving your terminal.
+[PhaseFolio](https://phasefolio.com) is a financial-modeling platform for biotech assets — risk-adjusted NPV (rNPV), competitive landscape, evidence registers, and signed IC dossiers. This plugin connects Claude to PhaseFolio's read-only MCP API so you can pull projects, scenarios, dossiers, and benchmarks into the conversation, and verify signed reports — without leaving your terminal.
 
 ## Install
 
@@ -13,40 +13,65 @@ In any Claude Code session:
 /plugin install phasefolio@phasefolio
 ```
 
-The MCP server is fetched from npm on first use. Nothing else to install.
+The plugin connects directly to `https://app.phasefolio.com/api/mcp` over HTTP — no Node.js install, no `npx`, no local subprocess.
 
 ## What you can ask Claude
 
 Once installed, prompts like these will Just Work:
 
-- *"Compute the rNPV for an NSCLC EGFR-mutant 2L+ asset entering Phase II with $30M Phase II spend over 24 months."*
-- *"What's the probability of success for rheumatoid arthritis, antibody, no biomarker?"*
-- *"Pull comparable trials and competing programs for a Phase III oncology asset."*
-- *"Verify this signed PhaseFolio export."* (paste signature)
-- *"What does PhaseFolio do?"* (the bundled onboarding skill answers)
+- *"Pull project ABC from PhaseFolio and summarize the asset I'm valuing."*
+- *"List all scenarios in my project and tell me which has the highest rNPV."*
+- *"Fetch the IC dossier for scenario X and draft a partner memo from it."*
+- *"Surface comparable trials and competing programs for our anti-PD-L1 asset."*
+- *"What do the network benchmarks say for Phase II oncology PoS?"*
+- *"Verify this signed PhaseFolio export and tell me which methodology version produced it."*
+- *"What does PhaseFolio do?"* — the bundled onboarding skill answers.
 
-Claude discovers the available tools and their input schemas automatically — you don't need to memorize names.
+Claude discovers each tool's input schema automatically — you don't need to memorize tool names.
 
 ## What's inside
 
-The plugin exposes PhaseFolio's MCP tool surface for four use cases:
+The plugin exposes **9 read-only MCP tools** in two tiers:
 
-| Use case | What it does |
+### Project-scoped (require a token)
+
+| Tool | What it returns |
 | :--- | :--- |
-| **Valuation** | Computes risk-adjusted NPV across clinical stages with custom costs, durations, peak sales, and discount rates. |
-| **Benchmarks** | Looks up published probabilities of success by indication × modality × biomarker, with stage and IO multipliers. |
-| **Landscape** | Surfaces comparable trials and competing programs from ClinicalTrials.gov + FDA Drugs@FDA, narrowed per sub-indication. |
-| **Trust** | Verifies signed PhaseFolio export signatures and surfaces the embedded engine, methodology, and benchmark versions. |
+| `get_project` | Project metadata — indication, modality, biomarker, current stage |
+| `list_scenarios` | All scenarios in a project, with IDs and timestamps |
+| `get_scenario` | Full scenario inputs — stage costs, durations, PoS, commercial assumptions |
+| `get_evidence` | Evidence register entries — citations, sources, notes |
+| `get_dossier` | Structured IC dossier JSON — same content as the rendered PDF |
+| `query_landscape` | Asset-anchored competitive landscape — comparable trials, competing programs |
 
-## Why "trust" is a tool
+### Public (no auth)
 
-Every PhaseFolio export — PDF, Excel, dossier — embeds the exact `engine_version`, `methodology_version`, and `benchmark_dataset_versions` that produced it. That makes any number a counterparty receives reproducible: they can verify the signature publicly and inspect the methodology that was current when the export was issued.
+| Tool | What it returns |
+| :--- | :--- |
+| `query_benchmarks` | Anonymized aggregate statistics across the PhaseFolio network |
+| `verify_export` | Verifies a signed PhaseFolio export — content hash, engine + methodology versions |
+| `get_methodology` | Methodology section content with stable citation URL and version stamp |
 
-Public surfaces (no account needed):
+Computation (rNPV, sensitivity, Monte Carlo) happens in the web app. The MCP surface is for retrieval and analysis of work already done at <https://app.phasefolio.com>.
+
+## Authentication
+
+To unlock the six project-scoped tools, set `PHASEFOLIO_TOKEN` in your environment before starting Claude Code:
+
+```bash
+export PHASEFOLIO_TOKEN="your-token-here"
+```
+
+Tokens are issued from your account at <https://app.phasefolio.com>. Without a token, the three public tools still work.
+
+## Trust artifacts
+
+Every PhaseFolio export embeds the exact `engine_version`, `methodology_version`, and `benchmark_dataset_versions` that produced it, so any number you produce is reproducible by a counterparty. The verify endpoint is public:
 
 - **Methodology hub** — <https://phasefolio.com/methodology>
 - **Public benchmarks** — <https://phasefolio.com/benchmarks>
 - **Verify a signed export** — <https://phasefolio.com/verify>
+- **Privacy policy** — <https://phasefolio.com/privacy>
 
 ## Important notes
 
@@ -59,7 +84,8 @@ Public surfaces (no account needed):
 | Component | Where |
 | :--- | :--- |
 | This Claude Code plugin | [TamalAdebisi/phasefolio-claude-plugin](https://github.com/TamalAdebisi/phasefolio-claude-plugin) |
-| MCP server (npm) | [`@phasefolio/mcp`](https://www.npmjs.com/package/@phasefolio/mcp) |
+| MCP endpoint | `https://app.phasefolio.com/api/mcp` |
+| MCP server (npm fallback) | [`@phasefolio/mcp`](https://www.npmjs.com/package/@phasefolio/mcp) |
 | MCP server (Official Registry) | `com.phasefolio/phasefolio` |
 | Web app | <https://phasefolio.com> |
 
